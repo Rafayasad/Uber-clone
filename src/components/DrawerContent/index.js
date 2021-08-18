@@ -22,7 +22,7 @@ export default function DrawerContent(props){
     return (
         <View style={{flex:1}}>
             <DrawerContentScrollView {...props}>
-                {console.log('drawaerprops==>',props)}
+                {/* {console.log('drawaerprops==>',props)} */}
                 <View style={{flex:1}}>
                 <StatusBar animated='auto'/>
                 <Drawer.Section style={{marginTop:-5,backgroundColor:'black'}}>
@@ -30,7 +30,7 @@ export default function DrawerContent(props){
                         <View style={{flexDirection:'row',marginTop:15}}>
                             <Avatar.Image
                             source={{
-                                uri:'https://scontent.fkhi1-1.fna.fbcdn.net/v/t1.6435-9/206794796_1817102075127261_8372042873344739012_n.jpg?_nc_cat=110&ccb=1-4&_nc_sid=09cbfe&_nc_eui2=AeG3xSkRvTa-ez3MCmYIeUYSy51BI-AXwuPLnUEj4BfC4yhRvsbQcGKE65aleXmJVSQ56yct5CALeKmG-bRgflzl&_nc_ohc=R59fC4IqGSYAX-FRzsP&_nc_ht=scontent.fkhi1-1.fna&oh=f1a18042d07df659ba1cb7140bfe956e&oe=613803CE'
+                                uri:'https://scontent.fkhi22-1.fna.fbcdn.net/v/t1.6435-9/206794796_1817102075127261_8372042873344739012_n.jpg?_nc_cat=110&ccb=1-5&_nc_sid=09cbfe&_nc_eui2=AeG3xSkRvTa-ez3MCmYIeUYSy51BI-AXwuPLnUEj4BfC4yhRvsbQcGKE65aleXmJVSQ56yct5CALeKmG-bRgflzl&_nc_ohc=9mP2YrkJGToAX-1oCJ0&_nc_ht=scontent.fkhi22-1.fna&oh=9f3023d1a0bc2092e441699824dc7d7b&oe=6143E14E'
                             }}
                             size={70}
                             />

@@ -33,13 +33,11 @@ export default function LoginIn({setIsSignedIn}){
       <Button 
       title="connect with facebook"
       onPress={FBLogIn}
-      // userInfo={userInfo}
       />
-    <DrawerContent setUserInfoo={userinfo}/>
+    {/* <DrawerContent userInformation={userinfo}/> */}
       </>
       </View>
             )
-
             
             async function FBLogIn () {
               try {

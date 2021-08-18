@@ -18,10 +18,11 @@ import { log } from 'react-native-reanimated';
 // import { Item } from 'react-native-paper/lib/typescript/components/List/List';
 
 export default function DrawerContent(props){
+
     return (
         <View style={{flex:1}}>
             <DrawerContentScrollView {...props}>
-                {console.log('drawaerprops==>',props.setUserInfoo)}
+                {console.log('drawaerprops==>',props)}
                 <View style={{flex:1}}>
                 <StatusBar animated='auto'/>
                 <Drawer.Section style={{marginTop:-5,backgroundColor:'black'}}>
@@ -34,7 +35,7 @@ export default function DrawerContent(props){
                             size={70}
                             />
                         <View style={{marginLeft:15}}>
-                            <Title style={{fontSize:17,marginTop:15,color:'white'}}>{props.name}</Title>
+                            <Title style={{fontSize:17,marginTop:15,color:'white'}}>Rafay Asad</Title>
                         </View>
                         </View>
                     </View>

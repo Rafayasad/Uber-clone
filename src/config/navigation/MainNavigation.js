@@ -14,6 +14,7 @@ import YourTrips from '../../views/YourTrips';
 import TripsDetails from '../../views/TripsDetails';
 import DrawerContent from '../../components/DrawerContent';
 import LoginIn from '../../views/LoginIn';
+import SelectCars from '../../views/SelectCars';
 
 const Stack = createNativeStackNavigator();
 const Tab = createMaterialTopTabNavigator();
@@ -25,7 +26,7 @@ export default function MainNavigator() {
   return <NavigationContainer>
           <Stack.Navigator screenOptions={{headerShown: false}}>
               {
-                  !isSignedIn ?
+                  isSignedIn ?
               <Stack.Screen name="Auth" component={()=><AuthNavigator setIsSignedIn={setIsSignedIn} />} />
               :
               <Stack.Screen name="App" component={AppNavigator} />
@@ -55,6 +56,7 @@ function DashboardStack(){
     return <Stack.Navigator screenOptions={{headerShown:false}} >
         <Stack.Screen name="Dashboard" component={Dashboard} />
         <Stack.Screen name="DropOffs" component={DropOffs} />
+        <Stack.Screen name="CarSelection" component={SelectCars} />
     </Stack.Navigator>
 }
 

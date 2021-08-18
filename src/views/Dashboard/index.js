@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, Button , StyleSheet , Dimensions , Platform} from 'react-native';
+import { View, Text, Button , StyleSheet , Dimensions , Platform, TouchableOpacity} from 'react-native';
 import AppWeb from '../../components/Webview';
 import MapView , {Marker} from 'react-native-maps';
 import { useState , useEffect } from 'react';
@@ -18,6 +18,7 @@ export default function Dashboard({navigation}){
         const [errorMsg, setErrorMsg] = useState(null);
         const [currentLocName,setCurrentLocName] = useState('');
         const [check,setCheck] = useState(false)
+        const [moveToDropOff,setMoveToDropOff] = useState(false)
       
         useEffect(() => {
           (async () => {
@@ -50,36 +51,22 @@ export default function Dashboard({navigation}){
               console.log("not done",e)
             }
             
-            fetch('https://api.foursquare.com/v2/venues/search?client_id=QEJ3YKKOS5HOCE4ANKTO4UWF1ERT4SJBNIXPWZGBE0VY02UI&client_secret=QD2I1K00RYVZ5A4TGQFUK3FVZOY44CPZX2NNA25KDQP5NVLI&ll=24.9121428,67.0545419&v=20180323')
+            fetch(`https://api.foursquare.com/v2/venues/search?client_id=QEJ3YKKOS5HOCE4ANKTO4UWF1ERT4SJBNIXPWZGBE0VY02UI&client_secret=QD2I1K00RYVZ5A4TGQFUK3FVZOY44CPZX2NNA25KDQP5NVLI&ll=${latitude},${longitude}&v=20180323`)
             .then(res => res.json())
-            .then(res => setCurrentLocName(res.response.venues[0].name))
+            .then(res =>
+              setCurrentLocName(res.response.venues[0].name))
             setCheck(true)
                    
           })();
           }, []);
 
         useEffect(()=>{
-          // (async () => {
 
-          //   let { status } = await Location.requestForegroundPermissionsAsync();
-          //   if (status !== 'granted') {
-          //     setErrorMsg('Permission to access location was denied');
-          //     return;
-          //   }
-
-          //   let location = await Location.getCurrentPositionAsync({});
-          //   const {coords:{latitude,longitude}} = location
-          //   console.log('loc======>',location)
-          //   setRegion({...region,latitude,longitude})
-          //   setLocation(location);
-            
-
-          fetch(`https://api.foursquare.com/v2/venues/search?
-          client_id=QEJ3YKKOS5HOCE4ANKTO4UWF1ERT4SJBNIXPWZGBE0VY02UI&
-          client_secret=QD2I1K00RYVZ5A4TGQFUK3FVZOY44CPZX2NNA25KDQP5NVLI&ll=${region.latitude},${region.longitude}&v=20180323`)
+          fetch(`https://api.foursquare.com/v2/venues/search?client_id=QEJ3YKKOS5HOCE4ANKTO4UWF1ERT4SJBNIXPWZGBE0VY02UI&client_secret=QD2I1K00RYVZ5A4TGQFUK3FVZOY44CPZX2NNA25KDQP5NVLI&ll=${region.latitude},${region.longitude}&v=20180323`)
           .then(res => res.json())
-          .then(res => console.log("==>",res)) 
-          console.log("reg lat==>",region.latitude)
+          .then(res => setCurrentLocName(res.response.venues[0].name)) 
+          setCheck(true)
+          // console.log("reg lat==>",region.latitude)
           
         // })();
         },[region])
@@ -92,24 +79,16 @@ export default function Dashboard({navigation}){
         }
 
     return(
-        <>
-        <View>    
-         {/* <Text style={{fontSize:40}}>DASHBOARD SCREEN</Text> */}
-           <Button 
-            title="goto dropOff screen"
-            onPress={()=>navigation.navigate('DropOffs')}
-            />
-
-
-        </View>
-        {check ?  
-                //CurrentLocName.response.venues[0].name
+        <>    
             <View>
-                <Text style={{textAlign:'center'}}>{currentLocName}</Text>
-            </View>
-        : 
-        <></> 
-        }
+           <Button 
+           title="goto dropOff screen"
+           onPress={()=>navigation.navigate('DropOffs',{
+             locName:currentLocName,
+             regions:region
+            })}
+           />
+            
         <MapView style={styles.map} region={region}>
             <Marker 
             title={currentLocName}
@@ -125,13 +104,15 @@ export default function Dashboard({navigation}){
             }
             />
         </MapView>
-    </>
-    )
+
+            </View>
+</>
+)
 }
 
 const styles = StyleSheet.create({
-    map: {
-        width: Dimensions.get('window').width,
+  map: {
+    width: Dimensions.get('window').width,
         height: Dimensions.get('window').height,
       },
   });

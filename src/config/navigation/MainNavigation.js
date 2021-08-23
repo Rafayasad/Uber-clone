@@ -15,41 +15,65 @@ import TripsDetails from '../../views/TripsDetails';
 import DrawerContent from '../../components/DrawerContent';
 import LoginIn from '../../views/LoginIn';
 import SelectCars from '../../views/SelectCars';
+import DriverDashboard from '../../views/DriverDashboard';
 
 const Stack = createNativeStackNavigator();
 const Tab = createMaterialTopTabNavigator();
 const Drawer = createDrawerNavigator();
 
 export default function MainNavigator() {
+
   // console.log('isSigned In', isSignedIn)
   const [isSignedIn,setIsSignedIn] = useState(false)
+  const [isSelect,setIsSelect] = useState(false)
+
   return <NavigationContainer>
           <Stack.Navigator screenOptions={{headerShown: false}}>
               {
-                  isSignedIn ?
-              <Stack.Screen name="Auth" component={()=><AuthNavigator setIsSignedIn={setIsSignedIn} />} />
+                  !isSignedIn ?
+              <Stack.Screen name="Auth" component={()=><AuthNavigator setIsSignedIn={setIsSignedIn} setIsSelect={setIsSelect} />} />
               :
-              <Stack.Screen name="App" component={AppNavigator} />
-              }
+              <>
+              {
+                !isSelect ?
+                <Stack.Screen name="App" component={AppNavigator} />
+              :
+              <Stack.Screen name="App" component={DriverNavigator} />
+            }
+            </>
+            }
           </Stack.Navigator>
   </NavigationContainer>
 }
 
-function AuthNavigator({setIsSignedIn}){
+function AuthNavigator({setIsSignedIn,setIsSelect}){
   return <Stack.Navigator screenOptions={{headerShown:true}}>
     <Stack.Screen 
     name='login'
-    component={()=><LoginIn setIsSignedIn={setIsSignedIn} />} 
+    component={()=><LoginIn setIsSignedIn={setIsSignedIn} setIsSelect={setIsSelect}/>} 
     />
   </Stack.Navigator>
 }
 
+
 function AppNavigator(){
-  return  <Drawer.Navigator drawerContent={props => <DrawerContent {...props}/>}>
-  <Drawer.Screen name="Dashboard Stack" component={DashboardStack} />
-  <Drawer.Screen name="Trips Stack" component={TripsStack} />
-  {/* <Drawer.Screen name="login" component={LoginIn} /> */}
-</Drawer.Navigator>
+  // const [isSelect,setIsSelect] = useState(false)
+
+  return(
+    <Drawer.Navigator drawerContent={props => <DrawerContent {...props}/>}>
+      <Drawer.Screen name="Dashboard Stack" component={DashboardStack} />
+      <Drawer.Screen name="Trips Stack" component={TripsStack} /> 
+  </Drawer.Navigator>
+  )
+}
+
+function DriverNavigator(){
+  return(
+    <Drawer.Navigator drawerContent={props => <DrawerContent {...props}/>}>
+      <Drawer.Screen name="Dashboard Driver Stack" component={DriverDashboard} />
+      <Drawer.Screen name="Trips Driver Stack" component={TripsStack} /> 
+  </Drawer.Navigator>
+  )
 }
 
 function DashboardStack(){

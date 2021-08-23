@@ -2,6 +2,7 @@ import * as React from 'react';
 import { View, Text , StyleSheet ,Dimensions ,TextInput ,SafeAreaView, Button} from 'react-native';
 import MapView , {Marker} from 'react-native-maps';
 import { useState , useEffect } from 'react';
+import { Searchbar } from 'react-native-paper';
 import * as Location from 'expo-location';
 
 export default function DropOffs({route,navigation},props){
@@ -10,6 +11,10 @@ export default function DropOffs({route,navigation},props){
     console.log("loc name dropoff===>>>>>>>>>",props)
     const [dropLoc,setDropLoc] = useState(locName)
     const [region,setRegion] = useState(regions)
+
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const onChangeSearch = query => setSearchQuery(query);
 
     useEffect(()=>{
 
@@ -23,13 +28,16 @@ export default function DropOffs({route,navigation},props){
     return(
         <>
         <View>
-            <Text style={{textAlign:'center'}}>drop off screen</Text>
+            <Text style={{textAlign:'center',marginTop:5}}>drop off screen</Text>
             <Text style={{textAlign:'center'}}>Pick-Up Location : {locName}</Text>
             <SafeAreaView>
-                <TextInput 
-                style={styles.input}
-                placeholder='Search Your Drop Location'
-                />
+            <Searchbar
+                style={{marginTop:10,padding:5}}
+                placeholder="Search Your Drop Location"
+                onChangeText={onChangeSearch}
+                value={searchQuery}
+            />
+               
             <Button
             title="Select ride"
             onPress={()=>navigation.navigate('CarSelection',{

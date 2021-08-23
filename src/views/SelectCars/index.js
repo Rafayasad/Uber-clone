@@ -158,7 +158,7 @@ export default function SelectCars({route}){
          <Button
         style={{height:40,width:300}}
         mode="contained"
-        color="grey"
+        color="#0a3338"
         onPress={() => Alert.alert('Ride Confirmation', `Your Ride Has Been Confirmed.`)}>
           {carSelection ?
          <> {cars} {isSelectRide} PKR </>

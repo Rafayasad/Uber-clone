@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { View, Text, Button , StyleSheet , Dimensions , Platform, TouchableOpacity, Image} from 'react-native';
+import { Alert,View, Text, Button , StyleSheet , Dimensions , Platform, TouchableOpacity, Image} from 'react-native';
 import AppWeb from '../../components/Webview';
 import MapView , {Marker} from 'react-native-maps';
 import { useState , useEffect } from 'react';
 import * as Location from 'expo-location';
 import { storeLoction } from '../../config/firebase';
-import {storeDriverLocation} from '../../config/firebase'
+import db , {storeDriverLocation , rejectRequest} from '../../config/firebase'
+// import db from '../../config/firebase';
 import { geohashForLocation, geohashQueryBounds, distanceBetween} from 'geofire-common';
 
 export default function DriverDashboard({navigation}){
@@ -20,6 +21,45 @@ export default function DriverDashboard({navigation}){
         const [errorMsg, setErrorMsg] = useState(null);
         const [currentLocName,setCurrentLocName] = useState('');
         const [moveToDropOff,setMoveToDropOff] = useState(false)
+
+
+        useEffect(()=>{
+          listenToRequests()
+        },[])
+      
+        const listenToRequests = () =>{
+          db.collection('driver').doc('caHLtdWSZTz7UXGKQevK').onSnapshot((doc)=>{
+            console.log('doc data==>',doc.data());
+            const data = doc.data()
+            console.log("currentReq==>>>>>>>>>",data.currentRequest)
+            if(data.currentRequest){
+              Alert.alert(
+                "Ride Request",
+                "1 user requested a ride",
+                [
+                  {
+                    text: "Accept",
+                    onPress: ()=> Alert.alert("Accept Pressed"),
+                    style: "Ok"
+                  },
+                  {
+                    text: "Reject",
+                    onPress: ()=> rejectRequest('caHLtdWSZTz7UXGKQevK'),
+                    style: "cancel"
+                  }
+                ],
+                {
+                  cancelable: true,
+                  onDismiss: () => Alert.alert("This alert was dismissed by tapping outing of the alert dialog")
+                }
+                )
+              }
+              })
+            }
+
+
+
+
       
         useEffect(() => {
           (async () => {
@@ -35,9 +75,11 @@ export default function DriverDashboard({navigation}){
           }, async(location) => {
               const {coords: {latitude, longitude}} = location
               setRegion({...region, latitude, longitude});
-              console.log('location***', location)
-              const lat = latitude;
-              const lng = longitude;
+              // console.log('location***', location)
+              const lat = 24.9323526;
+              const lng = 67.087263;
+              // const lat = latitude;
+              // const lng = longitude;
               try{
                 const hash = geohashForLocation([lat,lng]);
                 await storeDriverLocation('qVWK8SATpUpYt2urZeqw',{

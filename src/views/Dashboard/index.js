@@ -21,10 +21,10 @@ export default function Dashboard({navigation}){
         const [currentLocName,setCurrentLocName] = useState('');
         const [moveToDropOff,setMoveToDropOff] = useState(false)
         const [isLoading, setIsLoading] = useState(false);
-        const [loadingText,setLoadingText] = useState('Finding Drivers');
+        const [loadingText,setLoadingText] = useState('');
         const [currentIndex, setCurrentIndex] = useState(0);
         const center = [region.latitude, region.longitude];
-        const radiusInM = 14000; 
+        const radiusInM = 4000; 
 
         //fetching our drivers
         const fetchDrivers = async () =>{
@@ -51,13 +51,14 @@ export default function Dashboard({navigation}){
           //calculating a distance
           const distanceInKm = distanceBetween([lat,lng], center);
           console.log('distance, radiusINM ***', distanceInKm, radiusInM);
-          const distanceInM = distanceInKm * 100000;
+          const distanceInM = distanceInKm * 1000;
           if(distanceInM <= radiusInM) {
               matchingDocs.push({...doc.data(), id: doc.id, distanceInKm});
-              } 
-            }
+            } 
           }
-          setLoadingText(`${matchingDocs.length} Drivers found`)
+        }
+        setLoadingText(`${matchingDocs.length} Drivers found`)
+        setIsLoading(false)
           console.log("matchingDocs ===>", matchingDocs);
           requestDrivers(matchingDocs)
         }
@@ -65,8 +66,8 @@ export default function Dashboard({navigation}){
         //requesting driver for matching
         const requestDrivers = async (matchingDocs) =>{
           await requestDriver(matchingDocs[currentIndex].id,{
-            userId: "Qtt4HaEVXHoDGVofJwts",
-            lat: region.latitudeDelta,
+            userId: "PQRTGpIElkUmPuNCnNbn3Oj0EDC3",
+            lat: region.latitude,
             lng: region.longitude
           })
           console.log("driver requested")
@@ -75,7 +76,7 @@ export default function Dashboard({navigation}){
     
         //listening driver request
         const listenToRequestedDriver = (driverId) =>{
-          db.collection('drivers').doc(driverId).onSnapshot((doc)=>{
+          db.collection('driver').doc(driverId).onSnapshot((doc)=>{
             const data = doc.data();
             if(!data.currentRequest){
               setLoadingText("1 driver rejected! Finding another driver");
@@ -102,14 +103,14 @@ export default function Dashboard({navigation}){
             //         setRegion({...region,latitude,longitude})
             //         console.log("location===>",location)
             //     })
-            let location ={
-              coords: {
-                latitude: 24.9299578,
-                longitude: 67.0884178
-              }
-            }
+            // let location ={
+            //   coords: {
+            //     latitude: 24.9159168,
+            //     longitude: 67.0594378
+            //   }
+            // }
 
-            // let location = await Location.getCurrentPositionAsync({});
+            let location = await Location.getCurrentPositionAsync({});
             const {coords:{latitude,longitude}} = location
             console.log('location======>',location)
             setRegion({...region,latitude,longitude})
@@ -129,8 +130,7 @@ export default function Dashboard({navigation}){
             
             fetch(`https://api.foursquare.com/v2/venues/search?client_id=QEJ3YKKOS5HOCE4ANKTO4UWF1ERT4SJBNIXPWZGBE0VY02UI&client_secret=QD2I1K00RYVZ5A4TGQFUK3FVZOY44CPZX2NNA25KDQP5NVLI&ll=${latitude},${longitude}&v=20180323`)
             .then(res => res.json())
-            .then(res =>
-              setCurrentLocName(res.response.venues[0].name))
+            .then(res => setCurrentLocName(res.response.venues[0].name))
                    
           })();
           }, []);
@@ -163,9 +163,12 @@ export default function Dashboard({navigation}){
             })}
            />
 
-          {isLoading && <>
+          {isLoading ? <>
             <ActivityIndicator size="large" color="#00ff00"/>
-            <Text>{loadingText}</Text>
+            </>
+            :
+            <>
+            <Text style={{textAlign:'center'}}>{loadingText}</Text>
             </>
           }
             

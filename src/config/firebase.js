@@ -37,21 +37,21 @@ function storeDriverLocation(driverId,location) {
 }
 
 function getNearestDrivers(b) {
-  return db.collection('drivers')
+  return db.collection('driver')
   .orderBy('geohash')
   .startAt(b[0])
   .endAt(b[1]);
 }
 
 function requestDriver (driverId, {userId, lat, lng}) {
-  return db.collection('drivers').doc(driverId).update({
+  return db.collection('driver').doc(driverId).update({
       currentRequest: {
           userId, lat, lng
       }
   })
 }
 function rejectRequest (driverId) {
-  return db.collection('drivers').doc(driverId).update({
+  return db.collection('driver').doc(driverId).update({
       currentRequest: null
   })
 }

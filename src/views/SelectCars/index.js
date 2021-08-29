@@ -8,7 +8,7 @@ import MapViewDirections from 'react-native-maps-directions';
 import db, { storeLocation, getNearestDrivers, requestDriver , acceptRequest , storeDropOffLoc } from '../../config/firebase';
 import { geohashForLocation, geohashQueryBounds, distanceBetween} from 'geofire-common';
 
-export default function SelectCars({route}){
+export default function SelectCars({route,navigation}){
     
     const {pickUpLoc , dropOffLoc , pickUpReg , dropOffReg} = route.params;
     var lat1 = pickUpReg.latitude;
@@ -140,6 +140,7 @@ export default function SelectCars({route}){
              if(data.acceptedRequest){
               setLoadingText("1 driver accepted!");
               storeDropOffLoc("PQRTGpIElkUmPuNCnNbn3Oj0EDC3",dropOffReg)
+              navigation.navigate('RideScreen')
              }
            })
           })

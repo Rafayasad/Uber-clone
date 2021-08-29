@@ -16,6 +16,7 @@ import DrawerContent from '../../components/DrawerContent';
 import LoginIn from '../../views/LoginIn';
 import SelectCars from '../../views/SelectCars';
 import DriverDashboard from '../../views/DriverDashboard';
+import RideScreen from '../../views/RideScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createMaterialTopTabNavigator();
@@ -78,6 +79,7 @@ function DriverNavigator(){
 
 function DashboardStack(){
     return <Stack.Navigator screenOptions={{headerShown:false}} >
+        <Stack.Screen name="RideScreen" component={RideScreen} />
         <Stack.Screen name="Dashboard" component={Dashboard} />
         <Stack.Screen name="DropOffs" component={DropOffs} />
         <Stack.Screen name="CarSelection" component={SelectCars} />

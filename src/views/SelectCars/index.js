@@ -1,9 +1,12 @@
 import * as React from 'react';
-import {View,Dimensions , Text, SectionList, SafeAreaView, StyleSheet, StatusBar, TouchableOpacity,Alert } from 'react-native';
+import {View,Dimensions , Text, SectionList, SafeAreaView, StyleSheet, StatusBar, TouchableOpacity } from 'react-native';
+import { ActivityIndicator } from 'react-native-paper';
 import MapView , {Marker} from 'react-native-maps';
-import { useState , useRef } from 'react';
+import { useState , useEffect } from 'react';
 import { List , Button } from 'react-native-paper';
 import MapViewDirections from 'react-native-maps-directions';
+import db, { storeLocation, getNearestDrivers, requestDriver , acceptRequest , storeDropOffLoc } from '../../config/firebase';
+import { geohashForLocation, geohashQueryBounds, distanceBetween} from 'geofire-common';
 
 export default function SelectCars({route}){
     
@@ -30,6 +33,11 @@ export default function SelectCars({route}){
     const [isSelectRide,setisSelectRide] = useState('')
     const [cars,setCars] = useState('')
     const [carSelection,setCarSelection] = useState(false)
+    const [loadingText,setLoadingText] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const radiusInM = 5000;
+    const center = [lat1, lon1];
 
     const Item = ({ title }) => (
             <TouchableOpacity>
@@ -68,12 +76,110 @@ export default function SelectCars({route}){
 
 
 
+          //fetching our drivers
+        const fetchDrivers = async () =>{
+          setIsLoading(true);
+          const bounds = geohashQueryBounds(center, radiusInM);
+          const promises = [];
+          for(const b of bounds) {
+            const q = getNearestDrivers(b)
+            promises.push(q.get());
+          }
+
+
+          const snapshots = await Promise.all(promises)
+          console.log('snapshots==>',snapshots)
+          const matchingDocs = [];
+    
+          for(const snap of snapshots) {
+            for(const doc of snap.docs){
+              const lat = doc.get('lat');
+              const lng = doc.get('lng');
+              console.log("doc===>",doc)
+    
+
+          //calculating a distance
+          const distanceInKm = distanceBetween([lat,lng], center);
+          console.log('distance, radiusINM ***', distanceInKm, radiusInM);
+          const distanceInM = distanceInKm * 1000;
+          if(distanceInM <= radiusInM) {
+              matchingDocs.push({...doc.data(), id: doc.id, distanceInKm});
+            } 
+          }
+        }
+        setLoadingText(`${matchingDocs.length} Drivers found`)
+        setIsLoading(false)
+          console.log("matchingDocs ===>", matchingDocs);
+          requestDrivers(matchingDocs)
+        }
+        
+        //requesting driver for matching
+        const requestDrivers = async (matchingDocs) =>{
+          const lat = lat1
+          const lng = lon1
+          await requestDriver(matchingDocs[currentIndex].id,{
+            userId: "PQRTGpIElkUmPuNCnNbn3Oj0EDC3",
+            lat: lat,
+            lng: lng
+          })
+          console.log("1 driver requested")
+          listenToRequestedDriver(matchingDocs[currentIndex].id)
+        }
+        
+        //listening driver request
+        const listenToRequestedDriver = (driverId) =>{
+          db.collection('driver').doc(driverId).onSnapshot((doc)=>{
+            const data = doc.data();
+            if(!data.currentRequest){
+              setLoadingText("1 driver rejected! Finding another driver");
+              setCurrentIndex(currentIndex + 1);
+              requestDrivers();
+            }
+           db.collection('users').doc('PQRTGpIElkUmPuNCnNbn3Oj0EDC3').onSnapshot((doc)=>{
+             const data = doc.data();
+             if(data.acceptedRequest){
+              setLoadingText("1 driver accepted!");
+              storeDropOffLoc("PQRTGpIElkUmPuNCnNbn3Oj0EDC3",dropOffReg)
+             }
+           })
+          })
+        }
+
+        useEffect(()=>{
+          (async()=>{
+            const lat = lat1
+            const lng = lon1
+            try{
+              const hash = geohashForLocation([lat,lng]);
+              await storeLocation(undefined, {
+                geohash: hash, lat, lng
+              })
+              console.log("loction stored==>");
+            }
+            catch(e){
+              console.log("unable to store",e)
+            }
+          })();
+        },[]);
+
+
     return(
         <>
 
         <View style={{marginTop:5}}>
             <Text style={{textAlign:'center'}}>Pick-Up Location : {pickUpLoc}</Text>
             <Text style={{textAlign:'center'}}>Drop-Off Location : {dropOffLoc}</Text>
+        </View>
+
+        <View>
+        {isLoading ? <>
+          <ActivityIndicator animating={true} color='black' />
+            </>
+            :
+            <>
+            <Text style={{textAlign:'center'}}>{loadingText}</Text>
+            </>
+          }
         </View>
 
         <View style={styles.containers}>
@@ -90,8 +196,10 @@ export default function SelectCars({route}){
               coordinate={reg2}
               title={dropOffLoc}
               />
-              
-            {/* <MapViewDirections
+
+            {/* 
+         ******   FOR DRAW A LINE BETWEEN TWO COORDS LIKE => PICKUP TO DROPOFF *****
+            <MapViewDirections
             origin={pickUpReg}
             destination={dropOffReg}
             apikey="AIzaSyA3jrGJUfGBVf5T_JkbgtrE2zdtVJe-V0I"
@@ -112,10 +220,9 @@ export default function SelectCars({route}){
             </MapView>
         </View>
 
-        <View style={{marginTop:300}}>
+        <View style={{marginTop:260}}>
         <List.Section>
         <List.Subheader>Select Your Ride</List.Subheader>
-        
         <List.Item 
           style={{backgroundColor:'#C3C7C8'}}
           title='Mini' 
@@ -159,7 +266,9 @@ export default function SelectCars({route}){
         style={{height:40,width:300}}
         mode="contained"
         color="#0a3338"
-        onPress={() => Alert.alert('Ride Confirmation', `Your Ride Has Been Confirmed.`)}>
+        onPress={fetchDrivers}
+        // onPress={() => Alert.alert('Ride Confirmation', `Your Ride Has Been Confirmed.`)}
+        >
           {carSelection ?
          <> {cars} {isSelectRide} PKR </>
           :
@@ -179,11 +288,11 @@ const styles = StyleSheet.create({
     },
     containers: {
      ...StyleSheet.absoluteFillObject,
-     height:300,
+     height:270,
      width:400,
      justifyContent:'flex-end',
      alignItems:'center',
-     marginTop:50
+     marginTop:70
     },
     item: {
       backgroundColor: "#1D1E21",

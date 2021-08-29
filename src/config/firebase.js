@@ -50,9 +50,27 @@ function requestDriver (driverId, {userId, lat, lng}) {
       }
   })
 }
+
 function rejectRequest (driverId) {
   return db.collection('driver').doc(driverId).update({
       currentRequest: null
+  })
+}
+
+function acceptRequest (userId , {driverId, lat, lng}){
+  return db.collection('users').doc(userId).update({
+    acceptedRequest: {
+      driverId , lat , lng
+    },
+    type : 'Accepted'
+  })
+}
+
+function storeDropOffLoc (userId,dropOffRegions){
+  return db.collection('users').doc(userId).update({
+    dropOffLoc:{
+      dropOffRegions
+    }
   })
 }
 
@@ -67,6 +85,8 @@ export{
   getNearestDrivers,
   requestDriver,
   rejectRequest,
+  acceptRequest,
+  storeDropOffLoc,
   fBUser
 }
 

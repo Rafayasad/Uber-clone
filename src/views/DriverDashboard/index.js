@@ -4,7 +4,7 @@ import AppWeb from '../../components/Webview';
 import MapView , {Marker} from 'react-native-maps';
 import { useState , useEffect } from 'react';
 import * as Location from 'expo-location';
-import { storeLoction } from '../../config/firebase';
+import { acceptRequest, storeLoction } from '../../config/firebase';
 import db , {storeDriverLocation , rejectRequest} from '../../config/firebase'
 // import db from '../../config/firebase';
 import { geohashForLocation, geohashQueryBounds, distanceBetween} from 'geofire-common';
@@ -39,7 +39,12 @@ export default function DriverDashboard({navigation}){
                 [
                   {
                     text: "Accept",
-                    onPress: ()=> Alert.alert("Accept Pressed"),
+                    // onPress: ()=> Alert.alert("Accept Pressed"),
+                    onPress: ()=> acceptRequest(data.currentRequest.userId,{
+                      driverId:'caHLtdWSZTz7UXGKQevK',
+                      lat:region.latitude,
+                      lng:region.longitude
+                    }),
                     style: "Ok"
                   },
                   {
@@ -57,10 +62,6 @@ export default function DriverDashboard({navigation}){
               })
             }
 
-
-
-
-      
         useEffect(() => {
           (async () => {
 

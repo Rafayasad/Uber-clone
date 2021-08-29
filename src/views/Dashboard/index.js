@@ -10,8 +10,10 @@ import { geohashForLocation, geohashQueryBounds, distanceBetween} from 'geofire-
 
 export default function Dashboard({navigation}){
     const [region,setRegion] = useState({
-            latitude: 24.9121428,
-            longitude:  67.0545419,
+            latitude: 24.91213242,
+            longitude:  67.054324234,
+            // latitude: 24.9121428,
+            // longitude:  67.0545419,
             latitudeDelta: 0.0022,
             longitudeDelta: 0.0021,
         })
@@ -27,70 +29,71 @@ export default function Dashboard({navigation}){
         const radiusInM = 4000; 
 
         //fetching our drivers
-        const fetchDrivers = async () =>{
-          setIsLoading(true);
-          const bounds = geohashQueryBounds(center, radiusInM);
-          const promises = [];
-          for(const b of bounds) {
-            const q = getNearestDrivers(b)
-            promises.push(q.get());
-          }
+        // const fetchDrivers = async () =>{
+        //   setIsLoading(true);
+        //   const bounds = geohashQueryBounds(center, radiusInM);
+        //   const promises = [];
+        //   for(const b of bounds) {
+        //     const q = getNearestDrivers(b)
+        //     promises.push(q.get());
+        //   }
 
 
-          const snapshots = await Promise.all(promises)
-          console.log('snapshots==>',snapshots)
-          const matchingDocs = [];
+        //   const snapshots = await Promise.all(promises)
+        //   console.log('snapshots==>',snapshots)
+        //   const matchingDocs = [];
     
-          for(const snap of snapshots) {
-            for(const doc of snap.docs){
-              const lat = doc.get('lat');
-              const lng = doc.get('lng');
-              console.log("doc===>",doc)
+        //   for(const snap of snapshots) {
+        //     for(const doc of snap.docs){
+        //       const lat = doc.get('lat');
+        //       const lng = doc.get('lng');
+        //       console.log("doc===>",doc)
     
 
-          //calculating a distance
-          const distanceInKm = distanceBetween([lat,lng], center);
-          console.log('distance, radiusINM ***', distanceInKm, radiusInM);
-          const distanceInM = distanceInKm * 1000;
-          if(distanceInM <= radiusInM) {
-              matchingDocs.push({...doc.data(), id: doc.id, distanceInKm});
-            } 
-          }
-        }
-        setLoadingText(`${matchingDocs.length} Drivers found`)
-        setIsLoading(false)
-          console.log("matchingDocs ===>", matchingDocs);
-          requestDrivers(matchingDocs)
-        }
-
-        //requesting driver for matching
-        const requestDrivers = async (matchingDocs) =>{
-          await requestDriver(matchingDocs[currentIndex].id,{
-            userId: "PQRTGpIElkUmPuNCnNbn3Oj0EDC3",
-            lat: region.latitude,
-            lng: region.longitude
-          })
-          console.log("driver requested")
-          listenToRequestedDriver(matchingDocs[currentIndex].id)
-        }
-    
-        //listening driver request
-        const listenToRequestedDriver = (driverId) =>{
-          db.collection('driver').doc(driverId).onSnapshot((doc)=>{
-            const data = doc.data();
-            if(!data.currentRequest){
-              setLoadingText("1 driver rejected! Finding another driver");
-              setCurrentIndex(currentIndex + 1);
-              requestDrivers();
-            }
-          })
-        }
-      
-        useEffect(() => {
-          (async () => {
+        //   //calculating a distance
+        //   const distanceInKm = distanceBetween([lat,lng], center);
+        //   console.log('distance, radiusINM ***', distanceInKm, radiusInM);
+        //   const distanceInM = distanceInKm * 1000;
+        //   if(distanceInM <= radiusInM) {
+        //       matchingDocs.push({...doc.data(), id: doc.id, distanceInKm});
+        //     } 
+        //   }
+        // }
+        // setLoadingText(`${matchingDocs.length} Drivers found`)
+        // setIsLoading(false)
+        //   console.log("matchingDocs ===>", matchingDocs);
+        //   requestDrivers(matchingDocs)
+        // }
+        
+        // //requesting driver for matching
+        // const requestDrivers = async (matchingDocs) =>{
+        //   await requestDriver(matchingDocs[currentIndex].id,{
+        //     userId: "PQRTGpIElkUmPuNCnNbn3Oj0EDC3",
+        //     lat: region.latitude,
+        //     lng: region.longitude
+        //   })
+        //   console.log("driver requested")
+        //   listenToRequestedDriver(matchingDocs[currentIndex].id)
+        // }
+        
+        // //listening driver request
+        // const listenToRequestedDriver = (driverId) =>{
+        //   db.collection('driver').doc(driverId).onSnapshot((doc)=>{
+        //     const data = doc.data();
+        //     if(!data.currentRequest){
+        //       setLoadingText("1 driver rejected! Finding another driver");
+        //       setCurrentIndex(currentIndex + 1);
+        //       requestDrivers();
+        //     }
+        //   })
+        // }
+          
+          useEffect(() => {
+            (async () => {
 
             let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
+           console.log("status==>",status)
+            if (status !== 'granted'){
               setErrorMsg('Permission to access location was denied');
               return;
             }
@@ -109,24 +112,29 @@ export default function Dashboard({navigation}){
             //     longitude: 67.0594378
             //   }
             // }
-
-            let location = await Location.getCurrentPositionAsync({});
+            console.log("hi")
+            try{
+              let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Highest});
+            }
+            catch(e){
+              console.log("error text",e)
+            }
             const {coords:{latitude,longitude}} = location
             console.log('location======>',location)
             setRegion({...region,latitude,longitude})
-            setLocation(location);
-            const lat = latitude
-            const lng = longitude
-            try{
-              const hash = geohashForLocation([lat,lng]);
-              await storeLocation(undefined, {
-                geohash: hash, lat, lng
-              })
-              console.log("loction stored==>");
-            }
-            catch(e){
-              console.log("unable to store",e)
-            }
+            // setLocation(location);
+            // const lat = latitude
+            // const lng = longitude
+            // try{
+            //   const hash = geohashForLocation([lat,lng]);
+            //   await storeLocation(undefined, {
+            //     geohash: hash, lat, lng
+            //   })
+            //   console.log("loction stored==>");
+            // }
+            // catch(e){
+            //   console.log("unable to store",e)
+            // }
             
             fetch(`https://api.foursquare.com/v2/venues/search?client_id=QEJ3YKKOS5HOCE4ANKTO4UWF1ERT4SJBNIXPWZGBE0VY02UI&client_secret=QD2I1K00RYVZ5A4TGQFUK3FVZOY44CPZX2NNA25KDQP5NVLI&ll=${latitude},${longitude}&v=20180323`)
             .then(res => res.json())
@@ -163,14 +171,14 @@ export default function Dashboard({navigation}){
             })}
            />
 
-          {isLoading ? <>
+          {/* {isLoading ? <>
             <ActivityIndicator size="large" color="#00ff00"/>
             </>
             :
             <>
             <Text style={{textAlign:'center'}}>{loadingText}</Text>
             </>
-          }
+          } */}
             
         <MapView style={styles.map} region={region}>
             <Marker 
@@ -188,10 +196,10 @@ export default function Dashboard({navigation}){
             />
         </MapView>
 
-        <Button 
+        {/* <Button 
           title="GO RIDE"
           onPress={fetchDrivers}
-        />
+        /> */}
             </View>
 </>
 )

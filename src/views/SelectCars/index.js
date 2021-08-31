@@ -124,6 +124,7 @@ export default function SelectCars({route,navigation}){
           })
           console.log("1 driver requested")
           listenToRequestedDriver(matchingDocs[currentIndex].id)
+
         }
         
         //listening driver request
@@ -135,12 +136,12 @@ export default function SelectCars({route,navigation}){
               setCurrentIndex(currentIndex + 1);
               requestDrivers();
             }
-           db.collection('users').doc('PQRTGpIElkUmPuNCnNbn3Oj0EDC3').onSnapshot((doc)=>{
-             const data = doc.data();
-             if(data.acceptedRequest){
-              setLoadingText("1 driver accepted!");
-              storeDropOffLoc("PQRTGpIElkUmPuNCnNbn3Oj0EDC3",dropOffReg)
-              navigation.navigate('RideScreen')
+            db.collection('users').doc('PQRTGpIElkUmPuNCnNbn3Oj0EDC3').onSnapshot((doc)=>{
+              const data = doc.data();
+              if(data.acceptedRequest){
+                setLoadingText("1 driver accepted!");
+                storeDropOffLoc("PQRTGpIElkUmPuNCnNbn3Oj0EDC3",dropOffReg,dropOffLoc)
+                navigation.navigate('RideScreen')
              }
            })
           })
@@ -168,13 +169,13 @@ export default function SelectCars({route,navigation}){
         <>
 
         <View style={{marginTop:5}}>
-            <Text style={{textAlign:'center'}}>Pick-Up Location : {pickUpLoc}</Text>
-            <Text style={{textAlign:'center'}}>Drop-Off Location : {dropOffLoc}</Text>
+            <Text style={{textAlign:'center',fontWeight:"bold",marginTop:5}}>Pick-Up Location : {pickUpLoc}</Text>
+            <Text style={{textAlign:'center',fontWeight:"bold"}}>Drop-Off Location : {dropOffLoc}</Text>
         </View>
 
-        <View>
+        <View style={{marginTop:5}}>
         {isLoading ? <>
-          <ActivityIndicator animating={true} color='black' />
+          <ActivityIndicator animating={true} color='black' size='large'/>
             </>
             :
             <>
@@ -190,10 +191,12 @@ export default function SelectCars({route,navigation}){
             initialRegion={reg}
             >
               <Marker 
+              icon={require('../../../assets/marker1.jpg')}
               coordinate={reg}
               title={pickUpLoc}
               />
               <Marker 
+              icon={require('../../../assets/marker1.jpg')}
               coordinate={reg2}
               title={dropOffLoc}
               />
@@ -221,7 +224,7 @@ export default function SelectCars({route,navigation}){
             </MapView>
         </View>
 
-        <View style={{marginTop:260}}>
+        <View style={{marginTop:300}}>
         <List.Section>
         <List.Subheader>Select Your Ride</List.Subheader>
         <List.Item 
@@ -293,7 +296,7 @@ const styles = StyleSheet.create({
      width:400,
      justifyContent:'flex-end',
      alignItems:'center',
-     marginTop:70
+     marginTop:120
     },
     item: {
       backgroundColor: "#1D1E21",

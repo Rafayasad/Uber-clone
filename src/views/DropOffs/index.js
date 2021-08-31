@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { View, Text , StyleSheet ,Dimensions ,TextInput ,SafeAreaView, Button} from 'react-native';
+import { View, Text , StyleSheet ,Dimensions ,TextInput ,SafeAreaView} from 'react-native';
 import MapView , {Marker} from 'react-native-maps';
 import { useState , useEffect } from 'react';
-import { Searchbar } from 'react-native-paper';
+import { Searchbar,Button } from 'react-native-paper';
 import * as Location from 'expo-location';
 
 export default function DropOffs({route,navigation},props){
@@ -28,8 +28,8 @@ export default function DropOffs({route,navigation},props){
     return(
         <>
         <View>
-            <Text style={{textAlign:'center',marginTop:5}}>drop off screen</Text>
-            <Text style={{textAlign:'center'}}>Pick-Up Location : {locName}</Text>
+            {/* <Text style={{textAlign:'center',marginTop:5}}>drop off screen</Text> */}
+            <Text style={{textAlign:'center',fontWeight:'bold',marginTop:5}}>Pick-Up Location : {locName}</Text>
             <SafeAreaView>
             <Searchbar
                 style={{marginTop:10,padding:5}}
@@ -38,20 +38,31 @@ export default function DropOffs({route,navigation},props){
                 value={searchQuery}
             />
                
-            <Button
-            title="Select ride"
-            onPress={()=>navigation.navigate('CarSelection',{
+               <Button
+           style={{height:40,width:300,alignSelf:'center',marginTop:5}}
+           mode="contained"
+           color="#0a3338"
+           onPress={()=>navigation.navigate('CarSelection',{
+            pickUpLoc:locName,
+            dropOffLoc:dropLoc,
+            pickUpReg:regions,
+            dropOffReg:region
+        })} 
+           >
+             SELECT YOUR RIDE
+           </Button>
+             {/* onPress={()=>navigation.navigate('CarSelection',{
                 pickUpLoc:locName,
                 dropOffLoc:dropLoc,
                 pickUpReg:regions,
                 dropOffReg:region
-            })}
-            />
+            })} */}
             </SafeAreaView>
         </View>
         <View>
         <MapView style={styles.map} region={region}>
             <Marker 
+            icon={require('../../../assets/marker1.jpg')}
             title={dropLoc}
             coordinate={region}
             draggable={true}

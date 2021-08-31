@@ -17,6 +17,7 @@ import LoginIn from '../../views/LoginIn';
 import SelectCars from '../../views/SelectCars';
 import DriverDashboard from '../../views/DriverDashboard';
 import RideScreen from '../../views/RideScreen';
+import DriverRideScreen from '../../views/DriverRideScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createMaterialTopTabNavigator();
@@ -58,8 +59,6 @@ function AuthNavigator({setIsSignedIn,setIsSelect}){
 
 
 function AppNavigator(){
-  // const [isSelect,setIsSelect] = useState(false)
-
   return(
     <Drawer.Navigator drawerContent={props => <DrawerContent {...props}/>}>
       <Drawer.Screen name="Dashboard Stack" component={DashboardStack} />
@@ -71,7 +70,7 @@ function AppNavigator(){
 function DriverNavigator(){
   return(
     <Drawer.Navigator drawerContent={props => <DrawerContent {...props}/>}>
-      <Drawer.Screen name="Dashboard Driver Stack" component={DriverDashboard} />
+      <Drawer.Screen name="Dashboard Driver Stack" component={DriverDashboardStack} />
       <Drawer.Screen name="Trips Driver Stack" component={TripsStack} /> 
   </Drawer.Navigator>
   )
@@ -79,11 +78,18 @@ function DriverNavigator(){
 
 function DashboardStack(){
     return <Stack.Navigator screenOptions={{headerShown:false}} >
-        <Stack.Screen name="RideScreen" component={RideScreen} />
         <Stack.Screen name="Dashboard" component={Dashboard} />
         <Stack.Screen name="DropOffs" component={DropOffs} />
         <Stack.Screen name="CarSelection" component={SelectCars} />
+        <Stack.Screen name="RideScreen" component={RideScreen} />
     </Stack.Navigator>
+}
+
+function DriverDashboardStack(){
+  return <Stack.Navigator screenOptions={{headerShown:false}} >
+      <Stack.Screen name="DriverDashboard" component={DriverDashboard} />
+      <Stack.Screen name="DriverRideScreen" component={DriverRideScreen} />
+  </Stack.Navigator>
 }
 
 function DashboardTabs(){

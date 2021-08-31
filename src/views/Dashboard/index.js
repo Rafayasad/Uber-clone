@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { View, Text, Button , StyleSheet , Dimensions , Platform, ActivityIndicator} from 'react-native';
+import { View, Text , StyleSheet , Dimensions , Platform, ActivityIndicator} from 'react-native';
 import AppWeb from '../../components/Webview';
 import MapView , {Marker} from 'react-native-maps';
 import { useState , useEffect } from 'react';
 import * as Location from 'expo-location';
+import { Button } from 'react-native-paper';
 import { storeLoction } from '../../config/firebase';
 import db, { storeLocation, getNearestDrivers, requestDriver } from '../../config/firebase';
 import { geohashForLocation, geohashQueryBounds, distanceBetween} from 'geofire-common';
@@ -163,15 +164,25 @@ export default function Dashboard({navigation}){
     return(
         <>    
             <View>
-           <Button 
-           title="goto dropOff screen"
+          
+           <Button
+           style={{height:40,width:300,alignSelf:'center',marginTop:5}}
+           mode="contained"
+           color="#0a3338"
            onPress={()=>navigation.navigate('DropOffs',{
+            locName:currentLocName,
+            regions:region
+           })}
+           >
+             SELECT YOUR DROP OFF
+           </Button>
+
+          {/* 
+          onPress={()=>navigation.navigate('DropOffs',{
              locName:currentLocName,
              regions:region
             })}
-           />
-
-          {/* {isLoading ? <>
+          {isLoading ? <>
             <ActivityIndicator size="large" color="#00ff00"/>
             </>
             :
@@ -182,6 +193,7 @@ export default function Dashboard({navigation}){
             
         <MapView style={styles.map} region={region}>
             <Marker 
+            icon={require('../../../assets/marker1.jpg')}
             title={currentLocName}
             coordinate={region}
             draggable={true}
@@ -208,6 +220,6 @@ export default function Dashboard({navigation}){
 const styles = StyleSheet.create({
   map: {
     width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height * 0.8,
+    height: Dimensions.get('window').height,
       },
   });

@@ -66,16 +66,17 @@ function acceptRequest (userId , {driverId, lat, lng}){
   })
 }
 
-function storeDropOffLoc (userId,dropOffRegions){
+function storeDropOffLoc (userId,dropOffRegions,dropOffLoc){
   return db.collection('users').doc(userId).update({
     dropOffLoc:{
-      dropOffRegions
+      dropOffRegions,
+      dropOffLoc
     }
   })
 }
 
 function fBUser (fbUserId,userinfo){
-  return db.collection('FbUser').add(userinfo)
+  return db.collection('FbUser').doc(fbUserId).update(userinfo)
 }
 
 

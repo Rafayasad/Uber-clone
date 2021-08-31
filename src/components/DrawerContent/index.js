@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View , StatusBar} from 'react-native';
+import db, { fBUser } from '../../config/firebase';
 import { 
     DrawerContentScrollView ,
     DrawerItem 
@@ -18,6 +19,17 @@ import { log } from 'react-native-reanimated';
 // import { Item } from 'react-native-paper/lib/typescript/components/List/List';
 
 export default function DrawerContent(props){
+    const [userInfo,setUserInfo] = useState()
+
+    const getUser = () =>{
+        db.collection('FbUser').doc('2lZRkZDbPLOjsjpnmZkU').onSnapshot((doc)=>{
+            const data = doc.data()
+            console.log('drawerdata',data)
+            if(data){
+                setUserInfo(data)
+            }
+        })
+    }
 
     return (
         <View style={{flex:1}}>

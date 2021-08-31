@@ -40,11 +40,13 @@ export default function DriverDashboard({navigation}){
                   {
                     text: "Accept",
                     // onPress: ()=> Alert.alert("Accept Pressed"),
-                    onPress: ()=> acceptRequest(data.currentRequest.userId,{
+                    onPress: ()=>{ acceptRequest(data.currentRequest.userId,{
                       driverId:'caHLtdWSZTz7UXGKQevK',
                       lat:region.latitude,
                       lng:region.longitude
                     }),
+                  navigation.navigate('DriverRideScreen')
+                  },
                     style: "Ok"
                   },
                   {
@@ -136,14 +138,17 @@ export default function DriverDashboard({navigation}){
     return(
         <>    
             <View>
-           <Button 
+           {/* <Button 
            title="goto dropOff screen"
            onPress={()=>navigation.navigate('DropOffs',{
              locName:currentLocName,
              regions:region
             })}
-           />
-            
+           /> */}
+            {/* <Button 
+           title="Check your ride screen"
+           onPress={()=>navigation.navigate('DriverRideScreen')}
+           /> */}
         <MapView style={styles.map} region={region}>
             <Marker 
             icon={require('../../../assets/Black.jpg')}

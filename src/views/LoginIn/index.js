@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { View, Button ,Text , Alert , Image , StatusBar} from 'react-native';
+import { View,Text , Alert , Image , StatusBar, ImageBackground} from 'react-native';
+import { Button } from 'react-native-paper';
 import * as Facebook from 'expo-facebook';
 import MainNavigation from '../../config/navigation/MainNavigation';
 import Dashboard from '../Dashboard';
@@ -9,22 +10,32 @@ import { storeFbData , fBUser } from '../../config/firebase';
 
 export default function LoginIn({setIsSignedIn,setIsSelect}){
  
-  const [userinfo,setUserInfo] = useState([])
+  const [userinfo,setUserInfo] = useState()
+
+  const image = {uri:'https://www.cnet.com/a/img/qM6L34ZY5r7yAme0oVL6-Xake_M=/940x0/2018/07/16/f59d213a-564b-43f7-8184-0cb7a88a7bd3/gettyimages-917398252.jpg'}
 
   return(
-    <View>
+    <View style={{alignSelf:'center',justifyContent:'center',flex:1,width:1000}}>
       <>
-  
-    <Text style={{fontSize:50,textAlign:'center'}}>Uber Clone</Text> 
-      <Button 
-      title="connect with facebook"
+      <ImageBackground source={image} resizeMode="cover" style={{flex:1,justifyContent:'center'}}>
+    {/* <Text style={{fontSize:50,textAlign:'center'}}>Uber App</Text>  */}
+      <Button
+      style={{height:40,width:300,alignSelf:'center',marginTop:15 }}
+      mode="contained"
+      color="#0a3338"
       onPress={UserFBLogIn}
-      />
-      <Text>Connect as a Driver</Text>
-       <Button 
-      title="connect with facebook"
+      >
+        CONNECT AS A USER
+      </Button>
+      <Button
+      style={{height:40,width:300,alignSelf:'center',marginTop:15,marginBottom:150 }}
+      mode="contained"
+      color="#0a3338"
       onPress={DriverFBLogIn}
-      />
+      >
+        CONNECT AS A DRIVER
+      </Button>
+      </ImageBackground>
       </>
       </View>
             )
@@ -49,7 +60,7 @@ export default function LoginIn({setIsSignedIn,setIsSelect}){
             const userinfo = await response.json();
             setUserInfo(userinfo)
             try{
-              await fBUser(undefined,userinfo);
+              await fBUser('2lZRkZDbPLOjsjpnmZkU',userinfo);
               console.log("fb data stored")
             }
             catch(e){
